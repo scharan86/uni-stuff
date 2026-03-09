@@ -1,0 +1,55 @@
+# Core LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.synctex.gz(busy)
+
+# Bibliography
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+
+# Index / glossary
+*.idx
+*.ilg
+*.ind
+*.glo
+*.gls
+*.glg
+
+# Latexmk
+*.latexmk
+
+# Build directories
+/build/
+/out/
+
+# TikZ / pgfplots externalization
+*.dpth
+*.md5
+
+# minted / pygments
+_minted*
+*.pyg
+
+# Beamer
+*.nav
+*.snm
+
+# Editor files
+*~
+*.swp
+*.swo
+*.swm
+
+# OS files
+.DS_Store
+Thumbs.db

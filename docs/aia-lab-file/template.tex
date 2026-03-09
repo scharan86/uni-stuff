@@ -1,0 +1,308 @@
+\documentclass[12pt,a4paper]{report}
+
+% ----------------------------
+% Packages
+% ----------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\usepackage{setspace}
+\onehalfspacing
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{algorithm2e}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{glossaries}
+\usepackage{biblatex}
+\addbibresource{references.bib}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
+
+\makeglossaries
+
+% ----------------------------
+% Glossary Entries
+% ----------------------------
+\newglossaryentry{wal}{
+    name=Write-Ahead Log,
+    description={A logging mechanism ensuring durability and atomicity by recording changes before applying them}
+}
+
+\newglossaryentry{lsn}{
+    name=LSN,
+    description={Log Sequence Number, a monotonically increasing identifier for log records}
+}
+
+% ----------------------------
+% Theorem Environments
+% ----------------------------
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+
+% ----------------------------
+% Listings Configuration
+% ----------------------------
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    breaklines=true,
+    frame=single
+}
+
+% ----------------------------
+% Title Page
+% ----------------------------
+\title{\Huge Write-Ahead Logging (WAL) \\ \Large A Systems-Level Report}
+\author{Technical Systems Analysis}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ----------------------------
+% Abstract
+% ----------------------------
+\begin{abstract}
+Write-Ahead Logging (WAL) is a core recovery mechanism in database systems ensuring atomicity and durability under failure. This report presents theoretical foundations, implementation mechanics, mathematical modeling, recovery algorithms, and practical trade-offs in WAL-based systems.
+\end{abstract}
+
+% ----------------------------
+\chapter{Introduction}
+
+\section{Motivation}
+
+In durable storage systems, failures are inevitable. WAL ensures that:
+
+\begin{enumerate}
+    \item No committed transaction is lost.
+    \item No partial transaction corrupts the database.
+\end{enumerate}
+
+\section{Formal Definition}
+
+\begin{definition}
+A \gls{wal} protocol requires that before any data page is written to persistent storage, the corresponding log record must be flushed to stable storage.
+\end{definition}
+
+% ----------------------------
+\chapter{Mathematical Model of WAL}
+
+\section{State Representation}
+
+Let:
+
+\[
+D = \{p_1, p_2, ..., p_n\}
+\]
+
+be the set of data pages and
+
+\[
+L = \{r_1, r_2, ..., r_m\}
+\]
+
+be the ordered log records.
+
+Each record has a \gls{lsn}:
+
+\[
+LSN(r_i) = i
+\]
+
+\section{WAL Invariant}
+
+\[
+\forall p \in D,\quad \text{if } pageLSN(p) = k,\text{ then log records } r_1...r_k \text{ are durable}
+\]
+
+\begin{theorem}
+If the WAL invariant holds, then recovery guarantees atomicity and durability.
+\end{theorem}
+
+\begin{proof}
+Since all modifications are logged before persistence, recovery can replay committed operations and undo incomplete ones using log records. Thus no committed state is lost and no partial state survives.
+\end{proof}
+
+% ----------------------------
+\chapter{WAL Architecture}
+
+\section{High-Level Components}
+
+\begin{itemize}
+    \item Log Buffer
+    \item Log File (Sequential)
+    \item Buffer Pool
+    \item Checkpoint Manager
+\end{itemize}
+
+\section{Architecture Diagram}
+
+\begin{center}
+\begin{tikzpicture}[node distance=2cm]
+\node (app) [rectangle, draw] {Transaction};
+\node (logbuf) [rectangle, draw, below of=app] {Log Buffer};
+\node (disklog) [rectangle, draw, below of=logbuf] {Log File (Disk)};
+\node (buffer) [rectangle, draw, right of=logbuf, xshift=4cm] {Buffer Pool};
+\node (diskdata) [rectangle, draw, below of=buffer] {Data Files};
+
+\draw[->] (app) -- (logbuf);
+\draw[->] (logbuf) -- (disklog);
+\draw[->] (app) -- (buffer);
+\draw[->] (buffer) -- (diskdata);
+\end{tikzpicture}
+\end{center}
+
+% ----------------------------
+\chapter{ARIES Recovery Algorithm}
+
+\section{Phases}
+
+\begin{enumerate}
+    \item Analysis
+    \item Redo
+    \item Undo
+\end{enumerate}
+
+\section{Pseudo-code}
+
+\begin{algorithm}[H]
+\SetAlgoLined
+\KwResult{Recovered database}
+Read last checkpoint\;
+Perform Analysis phase\;
+Redo all operations from smallest dirty LSN\;
+Undo incomplete transactions in reverse order\;
+\caption{ARIES Recovery}
+\end{algorithm}
+
+% ----------------------------
+\chapter{Implementation Example}
+
+\section{Log Record Structure}
+
+\begin{lstlisting}
+typedef struct {
+    uint64_t lsn;
+    uint32_t txn_id;
+    uint32_t page_id;
+    uint32_t prev_lsn;
+    char data[256];
+} LogRecord;
+\end{lstlisting}
+
+\section{Commit Protocol}
+
+\begin{enumerate}
+    \item Append commit record to log buffer.
+    \item Flush log buffer to disk.
+    \item Acknowledge commit.
+\end{enumerate}
+
+% ----------------------------
+\chapter{Checkpointing}
+
+\section{Purpose}
+
+Checkpointing reduces recovery time by limiting log replay.
+
+\section{Checkpoint Record}
+
+\[
+Checkpoint = \{ActiveTxns, DirtyPages\}
+\]
+
+\section{Comparison Table}
+
+\begin{longtable}{@{}lll@{}}
+\toprule
+Strategy & Pros & Cons \\
+\midrule
+Sharp Checkpoint & Fast recovery & High pause time \\
+Fuzzy Checkpoint & No pause & More complex recovery \\
+\bottomrule
+\end{longtable}
+
+% ----------------------------
+\chapter{Performance Considerations}
+
+\section{Sequential I/O Advantage}
+
+Log writes are sequential:
+
+\[
+Throughput \propto \frac{1}{Seek\ Time}
+\]
+
+Sequential writes minimize seek overhead.
+
+\section{Group Commit}
+
+Multiple transactions share a single flush:
+
+\[
+Latency_{avg} = \frac{FlushTime}{N}
+\]
+
+% ----------------------------
+\chapter{Advanced Topics}
+
+\section{WAL in Distributed Systems}
+
+Used in:
+\begin{itemize}
+    \item Replication logs
+    \item Consensus protocols
+    \item Event sourcing
+\end{itemize}
+
+\section{Logical vs Physical Logging}
+
+\begin{itemize}
+    \item Physical: byte-level changes
+    \item Logical: semantic operations
+\end{itemize}
+
+% ----------------------------
+\chapter{Conclusion}
+
+Write-Ahead Logging remains the foundational durability mechanism in modern storage engines. Its strength lies in sequential I/O, formal invariants, and deterministic recovery semantics.
+
+% ----------------------------
+\appendix
+
+\chapter{Glossary}
+\printglossaries
+
+\chapter{Future Research Directions}
+
+\begin{itemize}
+    \item Persistent memory optimization
+    \item Hybrid logical-physical logging
+    \item WAL compression techniques
+\end{itemize}
+
+% ----------------------------
+\printbibliography
+
+\end{document}
