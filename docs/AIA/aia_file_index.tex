@@ -1,0 +1,188 @@
+\documentclass[11pt, a4paper]{article}
+
+\usepackage[a4paper, top=2cm, bottom=2cm, left=1.5cm, right=1.5cm]{geometry}
+\usepackage{lmodern}
+\usepackage{fontenc}
+\usepackage{inputenc}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{makecell}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{parskip}
+% Colors
+\definecolor{headerblue}{RGB}{255,255,255}
+\definecolor{tablegray}{RGB}{220,220,220}
+\definecolor{lightgray}{RGB}{240,240,240}
+
+% Page style
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small AIA Lab Practicals}
+\fancyhead[R]{\small ET23BTIT133}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% -------------------------------------------------------
+% Cover / Header block (matching the image)
+% -------------------------------------------------------
+
+\vspace*{0.8cm}
+
+{\fontsize{22pt}{26pt}\selectfont\bfseries Artificial Intelligence and Applications}
+
+\vspace{0.3cm}
+{\large\color{gray} Practical Work and Lab Assignments}
+
+\vspace{1cm}
+
+\begin{tabular}{@{}p{0.48\textwidth} p{0.48\textwidth}@{}}
+  \textbf{Name:} Sree Saicharan Vadapalli   & \quad \quad \quad \quad \textbf{Subject Code:} BTIT13601 \\[4pt]
+  \textbf{Branch:} Information Technology   & \quad \quad \quad \quad \textbf{Year:} B. Tech III \textbf{(Sem VI)} \\[4pt]
+  \textbf{Enrollment No:} ET23BTIT133       & \\
+\end{tabular}
+
+\vspace{1.5cm}
+
+% -------------------------------------------------------
+% INDEX heading
+% -------------------------------------------------------
+
+\begin{center}
+  {\large\bfseries INDEX}
+\end{center}
+
+\vspace{0.5cm}
+
+% -------------------------------------------------------
+% Index Table
+% -------------------------------------------------------
+
+\renewcommand{\arraystretch}{1.6}
+
+\begin{longtable}{
+  |>{\centering\arraybackslash}p{0.7cm}
+  |>{\centering\arraybackslash}p{1.7cm}
+  |>{\arraybackslash}p{9.3cm}
+  |>{\centering\arraybackslash}p{1.3cm}
+  |>{\centering\arraybackslash}p{2.2cm}|
+}
+
+\hline
+\rowcolor{tablegray}
+\makecell{\textbf{Sr.}\\\textbf{No.}} & \textbf{Date} & \textbf{Experiments} & \makecell{\textbf{Page}\\\textbf{No.}} & \textbf{Signature} \\
+\hline
+\endfirsthead
+
+\hline
+\rowcolor{tablegray}
+\makecell{\textbf{Sr.}\\\textbf{No.}} & \textbf{Date} & \textbf{Experiments} & \makecell{\textbf{Page}\\\textbf{No.}} & \textbf{Signature} \\
+\hline
+\endhead
+
+1. & &
+Study and make a detailed note on the following AI Projects:\newline
+\quad i)   Deep Blue (chess program)\newline
+\quad ii)  Chinook (checkers program)\newline
+\quad iii) ALVINN (autonomous driving)\newline
+\quad iv)  Eliza, ChatGPT (chatbots)\newline
+\quad v)   Google Translate (machine translation)\newline
+\quad vi)  Gemini (AI Assistant)\newline
+\quad vii) Nano Banana (AI image generator)
+& & \\
+\hline
+
+2. & &
+Write a program to solve the 8-puzzle. First, check if the puzzle is solvable. If solvable, starting from any input state, it should display the sequence of moves to reach the ordered output state. Rule to move: Slide a tile from a non-empty square to an adjoining empty square.
+& & \\
+\hline
+
+3. & &
+Implement the WaterJug Problem. The state of the system is represented as $(x,y)$, where $x$ is the quantity of water in the 4-gallon jug and $y$ is the quantity of water in the 3-gallon jug. Assume the initial state to be $(0,0)$ and the goal state to be $(2,0)$. Output the sequence of steps to go from the initial to the goal state.
+& & \\
+\hline
+
+4. & &
+Develop an Expert System for medical diagnosis in Prolog. Given the symptoms, the expert system should predict the disease; given the disease, the expert system should display the symptoms.
+& & \\
+\hline
+
+5. & &
+Write a Prolog Program to append two lists.
+& & \\
+\hline
+
+6. & &
+Write a Prolog Program to reverse a list.
+& & \\
+\hline
+
+7. & &
+Write a Prolog Program to find the $n$th element from a list of integers.
+& & \\
+\hline
+
+8. & &
+Write a Prolog Program to check whether a given element is a member of a list.\newline
+\textit{(Note: Use a recursive approach for Prolog programs 9 to 11)}
+& & \\
+\hline
+
+9. & &
+Implement a program to generate the Fibonacci series up to a given number $N$.
+& & \\
+\hline
+
+10. & &
+Implement a program to display the Factorial of a given number $N$.
+& & \\
+\hline
+
+11. & &
+Implement a program to implement the Tower of Hanoi.
+& & \\
+\hline
+
+12. & &
+Implement the Tic-Tac-Toe game using the Minimax algorithm for adversarial search. \textit{(Note: The first move is to be made by humans. The next move should be made by the computer and so on.)}
+& & \\
+\hline
+
+13. & &
+Perform the following:\newline
+\quad (i)  Get an intelligent dialogue out of Eliza\newline
+\quad (ii) Get an intelligent dialogue out of ChatGPT
+& & \\
+\hline
+
+14. & &
+Parse five English sentences using the Link Grammar Parser.
+& & \\
+\hline
+
+15. & &
+Consider a simple database of books and authors:\newline
+\texttt{author(jane, book1).}\newline
+\texttt{author(mary, book2).}\newline
+\texttt{author(john, book3).}\newline
+\texttt{author(jane, book4).}\newline
+\quad (i)  Write a Prolog rule to find all books by a given author (including repeated results if the same author wrote multiple books).\newline
+\quad (ii) Write a Prolog rule to check if a person is an author. Use cut to prevent unnecessary backtracking.
+& & \\
+\hline
+
+16. & &
+Write a Prolog program to check if a number is a member of a list of integers. Use cut to prevent unnecessary backtracking.
+& & \\
+\hline
+
+\end{longtable}
+
+\end{document}
