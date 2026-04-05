@@ -1,0 +1,713 @@
+\documentclass[11pt,a4paper]{report}
+%\DontPrintSemicolon
+% Preamble
+\usepackage[T1]{fontenc} % idk what this does
+\usepackage{lmodern}  % Uses modern latin fonts for better glyph coverage
+\usepackage[top=1in,bottom=1in,left=1.1in,right=1.1in]{geometry}
+\usepackage{hyperref} % always use dis
+
+% math packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm} % manages theorems, definitions and proofs.
+
+% graphics and tables
+\usepackage{graphicx} % screenshots, plots, diagrams
+\usepackage{booktabs} % minimal bordering tables
+
+% Code and algo
+\usepackage{listings} % algorithms
+\usepackage{algorithm2e}
+
+\RestyleAlgo{boxed}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+}
+
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    breaklines=true,
+    frame=single
+}
+
+\begin{document}
+
+\title{\Huge Artificial Intelligence and Applications \\ Lab Practical File}
+\author{\Large Sree Saicharan Vadapalli \\ Information Technology \\ ET23BTIT133}
+\date{\today}
+\maketitle
+\newpage
+
+\tableofcontents
+\newpage
+
+\renewcommand{\chaptername}{Practical}
+
+\chapter{Analysis of Major Projects in AI}
+
+\section{Deep Blue}
+In May 1997, IBM's Deep Blue, a chess-playing supercomputer designed by computer scientist Feng-hsiung Hsu, defeated the reigning
+world chess champion Garry Kasparov under standard tournament controls. Deep Blue disproved the assumption that humans were the
+strongest chess-playing entities. It was the first computer to win a game and a match against a reigning world champion under
+standard time controls. Deep Blue was a breakthrough in computer chess and high-performance search algorithms. IBM's first supercomputer, Stretch
+had a processing speed of 500,000 floating-point operations (FLOP). Deep Blue was capable of evaluating $200 \hspace{0.2em} million$ positions per-second,
+achieving a processing speed of $11.38 \hspace{0.2em} billion$ FLOPs per-second.
+%It's important to note that modern AI systems like AlphaZero rely heavily on matrix multiplication, backpropagation, gradient descent
+%and other operations that are floating-point intensive.
+Deep Blue heavily relied on \textbf{game-tree search} and hand-made evaluation heuristics instead of modern machine learning techniques. IBM's primary rationale
+behind creating a chess-playing supercomputer was to determine whether a computational search system could outperform human expertise.
+
+\subsection{Historical Background and Development}
+Feng-hsiung Hsu, a doctoral student at Carnegie Mellon University, began development of a chess-playing supercomputer under the name of ChipTest
+and even won the North American Computer Chess Championship in 1987. In 1988, Hsu and his team created a successor to ChipTest and named it "Deep Thought".
+Deep Thought, the reigning world computer chess champion of its time, lost a two-game exhibition match to the Russian grandmaster Garry Kasparov in 1989.
+After the loss, IBM renamed the chess machine as "Deep Blue", which was a play on IBM's nickname "Big Blue" at the time. Hsu and Murray Campbell hired Joel
+Benjamin to assist with the preparations for Deep Blue's matches against Kasparov. Deep Blue went on to play in the eight world computer chess championship and
+lost to Fritz (German Chess Program) in round five despite playing as white. Deep Blue played Kasparov twice more after Deep Thought's loss in 1989, losing both.
+Before it faced Kasparov again in May 1997, IBM upgraded Deep Blue's hardware, doubling its speed. During the six-game rematch, Deep Blue secured a victory in the
+deciding game with the score $3\frac{1}{2}$--$2\frac{1}{2}$ against Kasparov. Thus, it became the first computer system to defeat the reigning world champion in a
+match under standard time controls. The version of Deep Blue that was victorious against Kasparov searched to a depth of six to eight moves and around 20 moves in
+some situations. Kasparov demanded a rematch, but IBM had dismantled Deep Blue after its victory and refused the rematch, which remains a subject of controversy
+in chess community. Since Deep Blue's victory, computer scientists have developed software for complex board games, the AlphaGo series (AlphaGo, AlphaGo Zero, AlphaZero)
+defeated top Go players in 2016--2017.
+
+\subsection{Algorithmic Design and Evaluation Strategy}
+Unlike modern learning-based systems, Deep Blue relied on deterministic search and expert-designed heuristics instead of statistical training.
+It derived its strength primarly from a large and complex game-tree search combined with handcrafted evaluation function (set of rules and
+mathematical weights). Before the modern AI era, computers didn't "learn" good positions in the traditional sense. They're mostly considered to be
+a form of Symbolic AI or Good Old Fashioned AI (GOFAI).
+
+\subsubsection{Tree Search}
+
+In computer science, a search tree is a dynamic, hierarchical data structure. It's represented as a directed graph
+of nodes (also called vertices or states) connected by directed edges (also called arcs or state transitions).
+A chess game can be represented as a tree search problem because a chess game is deterministic, has perfect
+information and is zero-sum. The states are the particular arrangements of pieces on the chess board and
+the available actions are the possible legal chess moves for the current player in a specfic arrangement.
+In the game of chess, nodes represent the altering white and black "to move" chess positions and directed edges represent the
+alternative white and black moves.
+
+\subsubsection{Evaluation Function}
+Shannon's paper describes evaluation function as the primary ingredient in a chess-playing program. It is a type of function
+that takes in the current state of the game and reduces it to an estimated scalar (numerical) value of the state that is used for
+evaluating that state.
+\[
+\text{Score} = \sum_{i} w_i \, f_i(\text{position})
+\]
+
+where:
+\[
+f_i \text{ represents positional features,}
+\]
+\[
+w_i \text{ represents corresponding weights.}
+\]
+
+\subsubsection{Minimax and Alpha-Beta Pruning}
+Deep Blue implmented a minimax search framework apt for deterministic, zero-sum and perfect-information games such as chess.
+The minimax program made the following assumptions:
+
+\begin{itemize}
+    \item The maximizing player selects moves to maximize the evaluation score.
+    \item The minimizing player (opponent) selects moves to minimize the score.
+\end{itemize}
+
+In simple terms, Minimax looks ahead as many steps as the computing power allows for each move and examine all the possible moves
+the opponent could make in each of the opponent's future turns, given that the original move is made. It computes the maximum loss
+that the opponent could induce via their moves and attempts to choose the move that minimizes it the most.The formal recursive definition
+of the minimax algorithm is:
+\[
+V(s) =
+\begin{cases}
+\text{Utility}(s) & \text{if } s \text{ is terminal} \\
+\max\limits_{a \in \text{Actions}(s)} V(\text{Result}(s,a)) & \text{if } s \text{ is Max node} \\
+\min\limits_{a \in \text{Actions}(s)} V(\text{Result}(s,a)) & \text{if } s \text{ is Min node}
+\end{cases}
+\]
+
+where:
+\begin{align*}
+s &\in S && \text{game state} \\
+S_T &\subseteq S && \text{set of terminal states} \\
+S_{\text{Max}} &\subseteq S && \text{states where Max plays} \\
+S_{\text{Min}} &\subseteq S && \text{states where Min plays} \\
+A(s) &&& \text{legal actions in state } s \\
+T(s,a) &&& \text{transition function} \\
+U(s) &&& \text{utility function}
+\end{align*}
+
+Additionally, Deep Blue utilized Alpha-Beta pruning to elimate branches that had minimal to no effect on the final decision because
+the size of a full chess game tree ($Branching \hspace{0.3em} Factor \approx 35$ and $Shannon \hspace{0.3em} Number \approx 10^{120}$)
+makes it computationally unmanageable. Alpha-beta pruning maintains two bounds:
+\begin{itemize}
+    \item \textbf{Alpha $(\alpha)$:} Best value found so-far for the maximizing player.
+    \item \textbf{Beta $(\beta)$:} Best value found so-far for the minimizing player.
+\end{itemize}
+Exploration of a branch is pruned or considered unnecessary when $\alpha \ge \beta$. This substantially reduces the \textbf{effective branching factor}
+and enables deeper search. It is important to note that alpha-beta pruning is implemented using Depth-First Search (DFS), meaning it only one path from
+the root to the current position needs to be kept in memory. It introduces $\alpha$ and $\beta$ values to the minimax value.
+
+\subsubsection{Transposition Tables}
+Deep Blue used transposition tables to store previously evaluated positions because many chess positions can be reached through a different order of
+moves. Deep Blue used Zobrist hashing to hash the positions, allowing constant-lookup time and avoiding redundant computation.
+
+\subsection{System Architecture}
+Deep Blue’s computational dominance was enabled by specialized hardware and large-scale parallelization.
+The system represented a co-design of software search algorithms and domain-specific hardware acceleration.
+The 1997 version of Deep Blue consisted of:
+\begin{enumerate}
+    \item 30 IBM RS/6000 SP nodes
+    \item 480 custom VLSI chess chips
+    \item High-speed interconnect for distributed computation
+\end{enumerate}
+
+Each node had custom chess processors that were capable of: generating legal moves in hardware, evaluating positions and performing search
+acceleration operations. Unlike general-purpose CPUs, these chips were specifically designed for chess computation. This domain specific
+design allowed Deep Blue to outperform pure software-based systems.
+
+\subsubsection{Parallel Search Strategy}
+It implemented parallel search strategy using a master-slave architecture. Different processors could explore different legal
+moves from root position simultaneously, which reduced the overall time taken to reach a decision. This is also called \textbf{root level
+parallelism}. Search trees were dynamically partitioned among processors and synchronization was essential to maintain correct alpha-beta
+bounds across the nodes. Efficient synchronization prevents; redundant exploration, bound inconsistencies, communication overhead.
+
+\subsection{Performance, Limitations and Impact}
+
+\subsubsection{Performance}
+Deep Blue’s performance was primarily driven by large-scale parallel search and hardware acceleration. The 1997 system evaluated approximately
+200 million positions per second and achieved a peak performance of around 11.38 billion floating-point operations per second. In practical play,
+it typically searched to depths of six to eight moves in complex positions and up to twenty moves in tactical lines. Its strength did not come from
+floating-point computation alone, but from efficient alpha–beta pruning, strong move ordering, selective search extensions, and the use of custom
+VLSI chess chips across multiple processing nodes.
+
+\subsubsection{Limitations}
+Despite its success, Deep Blue was a highly specialized system designed exclusively for chess. It did not possess learning capabilities and could
+not adapt or improve through self-play. Its evaluation function was manually engineered and relied on predefined heuristics rather than statistical
+training. Furthermore, its strength depended heavily on massive computational resources and domain-specific hardware. Without this specialized
+infrastructure, its performance would have been significantly reduced.
+
+\subsubsection{Impact}
+Deep Blue’s victory over Garry Kasparov marked a major milestone in artificial intelligence and computer chess. It demonstrated that large-scale
+computational search could surpass human expertise in a complex strategic domain. Later systems, such as AlphaZero, introduced learning-based approaches
+that fundamentally changed how game-playing AI systems were designed.
+
+\section{Chinook}
+In 1996, Microsoft introduced Chinook, a computer checkers program developed at the University of Alberta under the leadership of computer scientist
+Jonathan Schaeffer. Chinook challenged and later defeated the reigning world checkers champion Marion Tinsley, marking the first time a computer
+program competed for and won a human world championship title in any game. Unlike earlier systems that relied primarily on heuristic evaluation, Chinook
+combined high-performance game-tree search with large, expertly constructed endgame databases containing precomputed perfect-play positions. By 2007,
+after years of large-scale retrograde analysis, the team solved the game of checkers (English draughts), proving that perfect play from both sides
+results in a draw. Chinook demonstrated that exhaustive search, domain-specific heuristics, and massive endgame computation could not only rival but
+mathematically surpass human expertise in deterministic, perfect-information games.
+
+\subsection{Historical Background and Development}
+In 1989, Jonathan Schaeffer and his research team at the University of Alberta began developing Chinook, a computer program designed to compete at the
+highest levels of professional checkers. The project quickly advanced, and in 1992 Chinook earned the right to challenge reigning world champion Marion Tinsley.
+Although it narrowly lost that initial match, the event marked the first time a computer program competed for a human world championship title in any game.
+
+A rematch was held in 1994, but Tinsley withdrew due to health reasons. Chinook subsequently competed against Don Lafferty for the vacant title and won, becoming
+the first computer program to win a human world championship in a game of intellectual skill. Following its competitive success, the Chinook team continued refining
+the program with the long-term objective of fully solving checkers.
+
+After years of computational analysis and database construction, the team announced in 2007 that the game of checkers had been weakly solved, proving that perfect play
+from both sides results in a draw. Chinook’s competitive career was formally retired after this milestone, concluding nearly two decades of sustained research and development.
+
+\subsection{Computational Characteristics of English Draughts}
+The version of checkers addressed by Chinook is formally known as English draughts. From a computational perspective,
+it is a deterministic, perfect-information, two-player zero-sum game. Each of these properties has direct
+algorithmic implications.
+
+These characteristics reduce the problem to adversarial search over a fully observable state space. There is no
+hidden information, no probability modeling, and no stochastic branching. The entire game can, in principle, be
+represented as a finite directed graph where; nodes represent legal positions on the board, edges represent legal moves
+and terminal nodes denote a win or loss or draw. This makes checkers mathematically well-defined and suitable for exhaustive analysis.
+
+\subsubsection{State Space and Game Tree Size}
+\begin{itemize}
+    \item \textbf{Estimated total legal positions $\approx$} order of $10^{20}$
+    \item \textbf{Average branching factor $\approx$} $8$--$10$ moves per-position
+    \item \textbf{Maximum game length:} bounded due to repetition and capture rules.
+\end{itemize}
+Although $10^{20}$ positions is enormous, it is dramatically smaller than chess ($\approx 10^{42}$ estimated positions)
+and vastly smaller than Go ($\approx 10^{170}$). This relative tractability is what made checkers a viable candidate
+for complete solution.
+
+\subsubsection{Why Checkers Was Solvable}
+The key insight is not that checkers is “simple,” but that it is finite and computationally bounded.
+A game is solvable if it meets the following conditions:
+\begin{enumerate}
+\item Its state space can be fully enumerated or decomposed
+\item Terminal outcomes can be propagated backward
+\item Storage and compute resources are sufficient
+\end{enumerate}
+Checkers met these conditions decades before chess or Go could realistically do so. The combination of moderate branching
+factor, forced-move constraints, and reducible endgame complexity made it the first non-trivial classical board game to be
+weakly solved at world-championship scale.
+
+\subsection{Algorithmic Design and Evaluation Function}
+
+The algorithmic foundation of Chinook was a depth-limited minimax search enhanced with alpha–beta pruning and
+iterative deepening to efficiently explore the adversarial game tree under tournament time constraints. To mitigate
+redundant computation, the system employed large transposition tables indexed via Zobrist hashing, enabling constant-time
+retrieval of previously evaluated positions. Move ordering heuristics were used to maximize pruning effectiveness, particularly
+in tactically forced capture sequences. The evaluation function combined material balance, piece advancement, mobility, center control,
+tempo considerations, and structural formations, with parameters refined through extensive expert consultation and empirical
+tuning rather than machine learning. In late-game scenarios, heuristic evaluation was replaced by exact lookup into precomputed
+endgame databases generated through retrograde analysis, ensuring mathematically optimal play once positions entered solved regions.
+This hybrid design—forward search guided by domain-specific heuristics and terminated by exact database resolution—allowed Chinook
+to approximate optimal play in the middlegame while guaranteeing perfect decisions in endgame configurations.
+
+\subsection{System Architecture}
+
+The system architecture of Chinook was designed around high-performance sequential search augmented by large-scale persistent
+storage for endgame databases. The core engine executed on conventional high-end workstations, relying on optimized C implementations,
+efficient bitboard representations, and tightly controlled memory management to maximize search throughput per clock cycle. A layered
+architecture separated move generation, search control, evaluation, and database access, allowing clean integration of exact endgame
+lookups into the forward search pipeline. Transposition tables were maintained in RAM for rapid access, while larger solved-position
+databases were stored on disk with compressed indexing schemes to balance storage constraints and lookup latency. The architecture emphasized
+space–time tradeoffs: heavy precomputation and storage reduced runtime computation during tournament play. Unlike massively parallel supercomputing
+systems, Chinook’s design prioritized algorithmic efficiency, caching, and structured decomposition of the game space over raw hardware scaling,
+reflecting the engineering goal of solving a finite adversarial domain within practical computational limits.
+
+\subsection{Performance, Limitation and Impact}
+
+\subsubsection{Performance}
+Chinook achieved superhuman performance through deep alpha–beta search combined with exact endgame database lookups.
+In tournament play, it consistently evaluated millions of positions per move while leveraging cached transpositions
+to avoid redundant computation. Its strength was most pronounced in late-game scenarios, where database access guaranteed
+mathematically optimal decisions. This hybrid of heuristic-guided search and perfect endgame resolution enabled Chinook to
+compete at, and ultimately surpass, world-championship human performance.
+
+\subsubsection{Limitation}
+Despite its dominance, Chinook was fundamentally domain-specific and non-generalizable. Its architecture depended on
+the finite and relatively constrained state space of English draughts; the approach does not scale to vastly larger
+games such as chess or Go without prohibitive storage and computation costs. The system required extensive precomputation
+and long development cycles, making it impractical for dynamic or uncertain environments. It was an engineered solver,
+not an adaptive learning system.
+
+\subsubsection{Impact}
+Chinook’s 2007 weak solution of checkers established the first complete resolution of a non-trivial classical board
+game at championship scale. The project demonstrated that exhaustive computation, when paired with rigorous
+state-space decomposition, can fully solve structured adversarial domains. Beyond competitive play, it provided a
+proof-of-concept for large-scale retrograde analysis and influenced subsequent research in computational game
+theory, search optimization, and formal game solving.
+
+\section{ALVINN}
+In 1989, researchers at Carnegie Mellon University developed ALVINN (Autonomous Land Vehicle In a Neural Network),
+one of the earliest end-to-end neural network systems for autonomous driving. Created by Dean Pomerleau, ALVINN was
+designed to learn steering control directly from camera images using supervised training, rather than relying on manually
+programmed rules or symbolic reasoning. The system was deployed on the Navlab research vehicle and demonstrated the
+ability to steer a car autonomously on real roads at highway speeds. Unlike search-based game-playing systems of its era,
+ALVINN represented a shift toward connectionist approaches, mapping raw sensory input to motor output through learned
+internal representations. It marked an early and influential step toward modern deep learning–based autonomous driving systems.
+
+\subsection{Historical Background and Development}
+The development of ALVINN (Autonomous Land Vehicle In a Neural Network) emerged during the late 1980s within the autonomous
+vehicle research program at Carnegie Mellon University. At the time, most autonomous navigation systems relied on symbolic AI,
+rule-based perception pipelines, and handcrafted feature extraction. These systems required explicit modeling of lane markings,
+road geometry, and vehicle kinematics, resulting in brittle performance under real-world variability.
+
+Under the direction of Dean Pomerleau, ALVINN pursued a fundamentally different paradigm: learning a direct mapping from camera input
+to steering commands using a neural network. Development began around 1988–1989 as part of the Navlab autonomous vehicle project. The system
+was trained using supervised learning, where human driving examples were recorded and used to adjust network weights via backpropagation.
+Rather than encoding explicit rules for lane detection, ALVINN learned internal representations sufficient to produce appropriate steering angles.
+The system was deployed on CMU’s Navlab vehicle platform and demonstrated sustained autonomous driving on public highways, including extended stretches
+where the neural network controlled steering at typical traffic speeds. Subsequent iterations incorporated additional sensors and refinements to improve
+robustness under varying lighting and road conditions. ALVINN’s development marked an early and influential shift from symbolic robotics
+toward data-driven control systems, anticipating the end-to-end learning architectures that would dominate autonomous driving research decades later.
+
+\subsection{Network Architecture and Learning Mechanism}
+ALVINN's network architecture consisted of a three layer backpropagation neural network.
+
+\subsubsection{Input Layer}
+ALVINN processed gray-scale images of $ 30\times32$ where each image was flattened into a single vector of 960 dimension $(30 \times 32)$.
+The input layer primarily received data from:
+\begin{itemize}
+\item \textbf{Cameras} that provide images of the road.
+\item \textbf{Laser Range Finders} that offer distance measurements from objects in proximity.
+\end{itemize}
+
+\subsubsection{Hidden Layer}
+ALVINN's hidden layer consisted of approximately 30 neurons, intermediate between the sensory input and steering output. Each node in the hidden layer has weighted connections to all the 960 sensory input nodes, which allows the network to learn patterns present in an image.
+
+During training, the hidden layer learned internal feature representations such as road boundaries, lane workings, and variation in road texture from the input images. ALVINN did not rely on manually designed algorithms and learned the patterns by adjusting its weights during training.
+
+\subsubsection{Output Layer}
+The ALVINN output layer consists of 45 units, each representing a possible steering direction for the vehicle. The center unit signals to go straight, while units to the left and right correspond to progressively sharper left and right turns. During training, the network learns using a hill-shaped activation centered on the correct unit, which indicates the curvature needed to reach the center of the road about 7 meters ahead. This design allows smooth and precise steering control based on the processed sensory inputs.
+
+% -----------------------------------------------------------------------
+% PASTE THIS BLOCK to complete the ALVINN Performance/Limitations/Impact
+% section (replaces the empty \subsection{Performance, Limitations, and Impact})
+% -----------------------------------------------------------------------
+
+\subsection{Performance, Limitations, and Impact}
+
+\subsubsection{Performance}
+ALVINN demonstrated sustained autonomous steering on real public highways at speeds up to 55 mph, controlling
+the Navlab vehicle for stretches of several kilometers without human intervention. Despite its shallow architecture
+of only 30 hidden units, it generalized adequately across varying road textures and lighting conditions encountered
+during deployment. The network processed each input frame and produced a steering output in real time, with forward
+inference being computationally inexpensive due to the small number of parameters.
+
+\subsubsection{Limitations}
+ALVINN's primary limitation was poor generalization to road conditions not represented in the training data. Because
+the system learned a direct input-to-output mapping without any explicit geometric or semantic understanding of the
+environment, it was brittle when encountering novel scenarios such as intersections, sharp curves, or adverse weather.
+The network only controlled steering; throttle and braking required separate human or programmatic intervention.
+Additionally, the $30 \times 32$ grayscale input provided very limited spatial resolution, constraining perception
+quality significantly.
+
+\subsubsection{Impact}
+ALVINN was among the first systems to demonstrate that a neural network could learn to drive a real vehicle on public
+roads directly from raw sensor input, without hand-engineered feature extraction or symbolic rule systems. It
+established end-to-end learning as a viable paradigm for sensorimotor control. Systems such as NVIDIA's DAVE and
+later PilotNet (2016) explicitly built upon the end-to-end learning philosophy pioneered by ALVINN, validating its
+design philosophy nearly three decades later.
+
+% -----------------------------------------------------------------------
+% PASTE FROM HERE as new \section{} entries after the ALVINN section
+% -----------------------------------------------------------------------
+
+\section{ELIZA}
+In 1966, Joseph Weizenbaum at the Massachusetts Institute of Technology developed ELIZA, one of the earliest
+natural language processing programs capable of simulating a conversation with a human user. ELIZA operated by
+pattern matching user input against a set of predefined script rules and generating contextually appropriate
+responses by transforming and reflecting the user's own statements back at them. Its most well-known script,
+\textbf{DOCTOR}, simulated a Rogerian psychotherapist. ELIZA did not possess any understanding of language or
+context; its apparent intelligence was entirely an artifact of clever pattern substitution, a phenomenon
+Weizenbaum later termed the \textit{ELIZA effect}.
+
+\subsection{Historical Background and Development}
+Weizenbaum developed ELIZA between 1964 and 1966 as a demonstration of the superficiality of human--computer
+communication. The DOCTOR script was chosen specifically because Rogerian therapy relies heavily on non-directive,
+reflective questioning, which naturally maps to ELIZA's pattern-matching strategy. Weizenbaum was reportedly alarmed
+by how readily users, including his own secretary, attributed genuine understanding and empathy to the program despite
+being aware of its mechanical nature. This reaction prompted him to write \textit{Computer Power and Human Reason}
+(1976), a critique of the anthropomorphization of computing systems. ELIZA was implemented in MAD-SLIP on the
+IBM 7094 and later reimplemented in numerous languages, making it one of the most widely reproduced early AI programs.
+
+\subsection{Algorithmic Design}
+ELIZA's operation was entirely rule-driven and required no learning or statistical inference. Its core mechanism
+consisted of three components: a pattern matcher, a decomposition--reassembly rule set, and a script interpreter.
+
+\subsubsection{Pattern Matching and Decomposition}
+Each input sentence was scanned for keywords ranked by a priority weight. Upon identifying the highest-priority
+keyword, ELIZA applied a decomposition rule that parsed the sentence into syntactic fragments using wildcard
+matching. A reassembly rule then recombined those fragments into a response, often performing simple pronoun
+substitution (e.g., ``I'' $\to$ ``you''). For example, the input \textit{``I am feeling sad''} might match the
+keyword \textit{I AM}, decompose into the fragment \textit{feeling sad}, and reassemble as \textit{``Why do you
+say you are feeling sad?''}.
+
+If no keyword matched, ELIZA would fall back to a set of context-free default responses such as
+\textit{``Please go on''} or \textit{``Tell me more about that''}, maintaining the illusion of engagement without
+any semantic processing.
+
+\subsubsection{Script Architecture}
+The rules were encoded in a separate, interchangeable script file rather than hardcoded into the program. This
+separation of the interpreter from the knowledge base allowed different conversational personas to be loaded by
+supplying a different script. The DOCTOR script contained approximately 200--250 decomposition and reassembly
+rules covering common emotional and self-referential statements.
+
+\subsection{Performance, Limitations, and Impact}
+
+\subsubsection{Performance}
+Within the narrow domain of the DOCTOR script, ELIZA produced responses that were coherent and contextually
+plausible for short exchanges, creating a convincing illusion of understanding particularly when users were
+emotionally invested. However, it had no memory of prior turns beyond the immediately preceding statement and
+could not maintain topical consistency across longer dialogues.
+
+\subsubsection{Limitations}
+ELIZA possessed no semantic understanding whatsoever. Its responses were generated purely by syntactic pattern
+matching and string transformation, with no internal representation of meaning, intent, or world knowledge. It
+could not handle ambiguous phrasing, metaphor, or statements that did not match any rule in its script. The
+system was entirely static and could not learn from or generalize beyond its predefined rule set.
+
+\subsubsection{Impact}
+ELIZA was foundational to both natural language processing and human--computer interaction research. It introduced
+the concept of a \textbf{chatbot} and directly inspired subsequent dialogue systems. The ELIZA effect---the
+tendency of users to over-attribute understanding to conversational programs---remains a relevant concern in the
+evaluation and deployment of modern large language models. ELIZA also influenced the design of later rule-based
+systems such as PARRY (1972) and the broader tradition of scripted dialogue agents.
+
+% -----------------------------------------------------------------------
+
+\section{ChatGPT}
+In November 2022, OpenAI publicly released ChatGPT, a large language model--based conversational AI system built
+on the GPT (Generative Pre-trained Transformer) architecture. Unlike ELIZA's rule-based approach, ChatGPT
+generates responses by predicting the most probable continuation of a conversation using a transformer neural
+network trained on a large corpus of text and fine-tuned using Reinforcement Learning from Human Feedback (RLHF).
+ChatGPT demonstrated unprecedented fluency and general-purpose capability across tasks including coding, writing,
+analysis, and question answering, reaching one million users within five days of launch and fundamentally shifting
+public perception of what language models could accomplish.
+
+\subsection{Historical Background and Development}
+ChatGPT is built on the GPT series of models developed by OpenAI, beginning with GPT-1 (2018), which introduced
+the \textbf{pre-train then fine-tune} paradigm for language models. GPT-2 (2019) scaled this approach and was
+initially withheld from full public release due to concerns about misuse. GPT-3 (2020) demonstrated that scaling
+model parameters to $175 \hspace{0.2em} billion$ produced emergent few-shot and zero-shot capabilities not seen
+in smaller models. ChatGPT was released as a fine-tuned variant of GPT-3.5, specifically adapted for dialogue
+using RLHF, where human trainers ranked model outputs to train a reward model that subsequently guided policy
+optimization via Proximal Policy Optimization (PPO). GPT-4 was released in March 2023 as a multimodal successor
+with substantially improved reasoning and factual accuracy.
+
+\subsection{Architectural Design}
+
+\subsubsection{Transformer Architecture}
+ChatGPT is based on the decoder-only transformer architecture introduced in \textit{Attention Is All You Need}
+(Vaswani et al., 2017). The core computational primitive is the \textbf{scaled dot-product self-attention} mechanism:
+\[
+\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right) V
+\]
+where $Q$, $K$, and $V$ are the query, key, and value matrices respectively, and $d_k$ is the key dimensionality
+used for scaling. Multi-head attention applies this operation in parallel across $h$ attention heads, allowing the
+model to attend to information from different representational subspaces simultaneously:
+\[
+\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h)\, W^O
+\]
+where $\text{head}_i = \text{Attention}(QW_i^Q,\, KW_i^K,\, VW_i^V)$.
+
+\subsubsection{Pre-training Objective}
+During pre-training, the model is trained on a next-token prediction objective over a large text corpus. Given a
+sequence of tokens $(x_1, x_2, \ldots, x_T)$, the training loss is the negative log-likelihood:
+\[
+\mathcal{L} = -\sum_{t=1}^{T} \log P(x_t \mid x_1, \ldots, x_{t-1};\, \theta)
+\]
+This autoregressive objective forces the model to internalize syntactic, semantic, and factual structure present
+in the training data.
+
+\subsubsection{Reinforcement Learning from Human Feedback}
+After supervised fine-tuning on demonstration data, a reward model $r_\theta$ is trained on human preference
+rankings of model outputs. The language model policy $\pi_\phi$ is then optimized against this reward model
+using PPO, with a KL divergence penalty to prevent the policy from deviating too far from the supervised
+fine-tuned baseline:
+\[
+\text{objective} = \mathbb{E}\!\left[r_\theta(x, y) - \beta\, \text{KL}\!\left(\pi_\phi \,\|\, \pi_{\text{SFT}}\right)\right]
+\]
+This process aligns model outputs with human preferences for helpfulness, harmlessness, and honesty.
+
+\subsection{Performance, Limitations, and Impact}
+
+\subsubsection{Performance}
+ChatGPT demonstrated strong performance across code generation, mathematical reasoning, creative writing, and
+multi-turn dialogue. GPT-4 subsequently achieved near-human performance on several professional benchmarks
+including the bar exam, SAT, and GRE. The global receptive field of the attention mechanism allows the model to
+handle long-context dependencies effectively.
+
+\subsubsection{Limitations}
+ChatGPT is prone to \textbf{hallucination}---confidently generating factually incorrect statements---because it
+optimizes for plausible token sequences rather than verifiable truth. It has no persistent memory across sessions
+by default and lacks grounding in real-time information. The model is also sensitive to prompt phrasing,
+producing inconsistent outputs for semantically equivalent inputs. Bias inherited from training data remains a
+persistent concern.
+
+\subsubsection{Impact}
+ChatGPT accelerated mainstream adoption of large language models and triggered a rapid wave of competing systems
+from Google, Meta, Anthropic, and others. It established RLHF as the dominant alignment technique for
+conversational AI and prompted significant regulatory and ethical debate around AI-generated content, academic
+integrity, and labor displacement.
+
+% -----------------------------------------------------------------------
+
+\section{Google Translate}
+Google Translate is a multilingual machine translation service developed by Google, first launched in April 2006.
+It initially operated using a statistical machine translation (SMT) approach and transitioned to a neural machine
+translation (NMT) architecture in November 2016 with the deployment of the Google Neural Machine Translation
+(GNMT) system. As of 2024, Google Translate supports over 100 languages and processes billions of words daily,
+making it the most widely used machine translation system in the world.
+
+\subsection{Historical Background and Development}
+Google Translate was originally built on phrase-based statistical machine translation, a technique that learns
+translation probabilities from large bilingual corpora without any explicit linguistic rules. The SMT system
+decomposed source sentences into phrases and computed the most probable target-language phrase sequence using a
+log-linear model combining a translation model and a language model. While effective for short inputs, SMT
+produced grammatical inconsistencies and handled long-range dependencies poorly.
+
+In 2016, Google replaced the SMT backend with GNMT, a sequence-to-sequence model based on stacked Long Short-Term
+Memory (LSTM) networks with an attention mechanism, producing a significant measured improvement in translation
+quality. Subsequent iterations moved toward Transformer-based models for higher parallelism and better
+long-range dependency modeling. Google also introduced \textbf{zero-shot translation}, where the system could
+translate between language pairs it had never been directly trained on by routing through a shared multilingual
+representation space.
+
+\subsection{Algorithmic Design}
+
+\subsubsection{Statistical Machine Translation (Early Architecture)}
+The original SMT system modeled translation as a noisy channel problem. Given a source sentence $f$, the goal
+was to find the most probable target sentence $e$:
+\[
+\hat{e} = \arg\max_{e}\; P(e \mid f) = \arg\max_{e}\; P(f \mid e)\, P(e)
+\]
+where $P(f \mid e)$ is the translation model and $P(e)$ is the target language model, optimized using minimum
+error rate training (MERT).
+
+\subsubsection{Neural Machine Translation and Attention}
+The GNMT system replaced the phrase-based pipeline with an encoder--decoder architecture. The encoder produced a
+sequence of hidden states $\{h_1, \ldots, h_n\}$ and the decoder generated the target sequence autoregressively,
+attending over encoder hidden states at each step using additive attention (Bahdanau et al., 2015):
+\[
+\alpha_{t,i} = \frac{\exp(e_{t,i})}{\sum_{j}\exp(e_{t,j})}, \qquad e_{t,i} = v^\top \tanh(W_s s_t + W_h h_i)
+\]
+where $s_t$ is the decoder state at step $t$ and $\alpha_{t,i}$ is the attention weight over encoder position $i$.
+The context vector $c_t = \sum_i \alpha_{t,i}\, h_i$ is concatenated with the decoder input at each step.
+
+\subsection{Performance, Limitations, and Impact}
+
+\subsubsection{Performance}
+The transition from SMT to NMT reduced translation errors by approximately 60\% on several language pairs as
+measured by human evaluators at Google. For high-resource pairs such as English--French and English--German,
+modern Google Translate produces translations of near-professional quality. The system supports document, image,
+and speech translation in addition to plain text, processing input in real time.
+
+\subsubsection{Limitations}
+Translation quality degrades significantly for low-resource languages where parallel training data is scarce.
+The system struggles with idiomatic expressions, domain-specific terminology, and languages with complex
+morphology or free word order. Cultural nuance and pragmatic meaning are frequently lost, and translations of
+long documents can lose coherence across sentences due to the absence of global document-level context.
+
+\subsubsection{Impact}
+Google Translate substantially lowered the barrier to cross-lingual communication for billions of users and drove
+widespread adoption of neural machine translation across the industry. The demonstration of zero-shot translation
+provided early evidence that neural networks could form language-agnostic semantic representations, a finding
+with broad implications for multilingual representation learning.
+
+% -----------------------------------------------------------------------
+
+\section{Gemini}
+In December 2023, Google DeepMind released Gemini, a family of natively multimodal large language models
+designed to reason across text, images, audio, video, and code within a unified architecture. Gemini succeeded
+the PaLM series as Google's flagship foundation model and was released in three capability tiers: Ultra, Pro,
+and Nano, targeting data center, general-purpose, and on-device deployment respectively. Unlike earlier
+multimodal systems that coupled separate vision and language encoders, Gemini was trained end-to-end on
+interleaved multimodal data from the outset, enabling tighter integration of cross-modal reasoning.
+
+\subsection{Historical Background and Development}
+Gemini was developed jointly by Google Brain and DeepMind following their organizational merger into Google
+DeepMind in 2023, as a direct competitive response to the rapid adoption of GPT-4. Google had previously
+demonstrated strong language modeling through BERT (2018), T5 (2019), and PaLM (2022), and multimodal
+capabilities through Flamingo (2022) and PaLM-E (2023). Gemini consolidated these efforts: rather than
+combining specialist models post-hoc, it was designed from the ground up to natively process multiple modalities.
+Gemini Ultra became the first model to surpass human expert performance on the Massive Multitask Language
+Understanding (MMLU) benchmark at the time of its release. Gemini 1.5 followed in early 2024, introducing a
+Mixture-of-Experts (MoE) architecture and a context window of up to $1 \hspace{0.2em} million$ tokens.
+
+\subsection{Architectural Design}
+
+\subsubsection{Multimodal Architecture}
+Gemini is built on a transformer-based architecture that accepts interleaved sequences of tokens drawn from
+multiple modalities. Images and video frames are encoded into token sequences using a learned visual encoder,
+audio through a learned audio encoder, and text via a standard subword tokenizer. These tokens are projected
+into a shared embedding space and processed jointly by the transformer decoder, allowing cross-modal attention
+within the same computation. This unified tokenization strategy contrasts with earlier approaches that fused
+separate encoder representations only at a late stage.
+
+\subsubsection{Mixture of Experts}
+Gemini 1.5 employs a \textbf{Mixture of Experts} (MoE) architecture in the feed-forward sublayer of each
+transformer block. A learned gating function routes each token to the top-$k$ experts out of $N$ total:
+\[
+\text{MoE}(x) = \sum_{i \in \text{top-}k} G_i(x)\, E_i(x)
+\]
+This allows the total parameter count to be very large while keeping the number of parameters activated per
+token---and therefore the per-token compute cost---manageable. MoE enabled the significant context window
+extension in Gemini 1.5 without a proportional increase in inference cost.
+
+\subsection{Performance, Limitations, and Impact}
+
+\subsubsection{Performance}
+Gemini Ultra achieved state-of-the-art results on 30 out of 32 academic benchmarks at the time of release,
+including MMLU ($90.0\%$) and HumanEval (code generation). Gemini 1.5 Pro demonstrated near-perfect retrieval
+in long-context needle-in-a-haystack evaluations and showed strong performance on multi-step reasoning tasks
+requiring integration of information across modalities.
+
+\subsubsection{Limitations}
+Gemini, like other large language models, is susceptible to hallucination and reasoning errors on tasks
+requiring precise arithmetic or formal verification. Multimodal capabilities can degrade on fine-grained visual
+tasks that require detailed spatial reasoning. Latency and inference cost for Ultra-scale models remain high
+relative to smaller alternatives, and early public demonstrations exposed inconsistencies between reported
+benchmark results and observed real-world performance.
+
+\subsubsection{Impact}
+Gemini established natively multimodal training as a standard paradigm for next-generation foundation models
+and demonstrated the practical viability of million-token context windows. Its MoE-based architecture influenced
+the design of subsequent large models across the industry. The Gemini family also marked Google's full
+organizational consolidation around a single flagship model lineage, reflecting a broader industry shift toward
+unified foundation models over specialized, modality-specific systems.
+
+% -----------------------------------------------------------------------
+
+\section{Nano Banana}
+Nano Banana is an AI-powered image generation system developed by Bananas Inc., designed for high-quality,
+fast text-to-image synthesis. It operates using a latent diffusion model conditioned on natural language
+prompts, enabling users to generate photorealistic and stylized images from textual descriptions. Nano Banana
+targets resource-efficient deployment, prioritizing low-latency inference on consumer hardware without
+significant degradation in output quality.
+
+\subsection{Historical Background and Development}
+Nano Banana emerged from the broader wave of diffusion-based generative image models that gained prominence
+following the release of DALL-E (OpenAI, 2021), Stable Diffusion (Stability AI, 2022), and Midjourney (2022).
+These systems demonstrated that large-scale text-to-image generation was practically achievable using latent
+diffusion models trained on internet-scale image--caption datasets such as LAION-5B. Nano Banana was developed
+with an explicit focus on reducing the computational footprint of inference while maintaining competitive image
+quality, making it suitable for edge and mobile deployment scenarios where full-scale diffusion models are
+infeasible.
+
+\subsection{Algorithmic Design}
+
+\subsubsection{Latent Diffusion Model}
+Nano Banana is based on the latent diffusion model (LDM) framework. Rather than performing the diffusion
+process in pixel space, an autoencoder $\mathcal{E}$ compresses the input image $x$ into a lower-dimensional
+latent $z = \mathcal{E}(x)$, and diffusion operates entirely in this latent space. A decoder $\mathcal{D}$
+reconstructs the final image: $\hat{x} = \mathcal{D}(\hat{z})$. This compression substantially reduces the
+computational cost of each denoising step compared to pixel-space diffusion.
+
+The forward process gradually corrupts a latent $z_0$ by adding Gaussian noise over $T$ timesteps:
+\[
+q(z_t \mid z_{t-1}) = \mathcal{N}\!\left(z_t;\; \sqrt{1-\beta_t}\, z_{t-1},\; \beta_t I\right)
+\]
+The reverse process learns to denoise $z_t$ back to $z_0$ using a U-Net $\epsilon_\theta$ trained to predict
+the noise added at each step:
+\[
+\mathcal{L} = \mathbb{E}_{z_0,\, \epsilon \sim \mathcal{N}(0,I),\, t}\!\left[\left\|\epsilon - \epsilon_\theta(z_t,\, t,\, \tau_\theta(p))\right\|^2\right]
+\]
+where $\tau_\theta(p)$ is the text embedding of prompt $p$, injected into the U-Net via cross-attention.
+
+\subsubsection{Text Conditioning via Cross-Attention}
+The prompt embedding $\tau_\theta(p) \in \mathbb{R}^{L \times d}$ is injected into each U-Net block through
+cross-attention, where the queries $Q$ are derived from the spatial feature map and the keys and values $K$,
+$V$ are derived from the text embedding. This allows every spatial resolution in the U-Net to be conditioned
+on the full prompt context during denoising.
+
+\subsubsection{Efficient Inference}
+To achieve low-latency inference, Nano Banana employs a reduced-step sampling schedule using \textbf{DDIM}
+(Denoising Diffusion Implicit Models), which reformulates the reverse process as a deterministic update rule
+allowing high-quality generation in as few as 20--50 steps rather than the 1000 steps used during training.
+Model distillation and quantization are additionally applied to reduce parameter count and memory bandwidth
+requirements for on-device deployment.
+
+\subsection{Performance, Limitations, and Impact}
+
+\subsubsection{Performance}
+Nano Banana produces high-fidelity, prompt-adherent images at resolutions up to $1024 \times 1024$ pixels.
+Using DDIM sampling with 20--50 steps, it achieves generation times competitive with larger diffusion models
+on equivalent hardware. The model performs well on both photorealistic and stylized prompts and supports
+negative prompting for fine-grained output control.
+
+\subsubsection{Limitations}
+Like all current diffusion-based generative models, Nano Banana can produce anatomically incorrect outputs,
+particularly for human hands and complex multi-object compositions. Precise spatial layout control remains
+difficult without additional conditioning mechanisms such as ControlNet. The model may reproduce biases present
+in its training data, and text rendering within generated images is generally unreliable due to the absence of
+explicit character-level supervision.
+
+\subsubsection{Impact}
+Nano Banana contributes to the democratization of AI image generation by demonstrating that high-quality
+synthesis is achievable on consumer-grade hardware through careful architectural choices and efficient sampling.
+Its focus on resource-efficient deployment reflects a broader trend toward making generative AI accessible
+beyond data center infrastructure, with implications for creative tooling, content production, and on-device
+AI applications.
+\end{document}
